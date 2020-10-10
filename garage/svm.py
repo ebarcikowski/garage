@@ -15,12 +15,13 @@ SLICE_Y = slice(UPPER_LEFT[1], LOWER_RIGHT[1])
 
 class SVM:
     CLOSED_IMGS = [
-        "closed3.jpg",
-        "closed2.jpg",
-        "closed_day.jpg"
+        "data/closed_001.jpg",
+        "data/closed_002.jpg",
+        "data/closed_003.jpg"
     ]
     OPEN_IMGS = [
-        "open.jpg"
+        "data/open_001.jpg"
+        "data/open_002.jpg"
     ]
     UPPER_LEFT = (900, 40)
     LOWER_RIGHT = (1200, 380)
