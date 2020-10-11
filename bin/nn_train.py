@@ -1,3 +1,4 @@
+#!/usr/env python3
 from garage import nn
 from argparse import ArgumentParser
 import tensorflow as tf
