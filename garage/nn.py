@@ -1,7 +1,7 @@
 import tensorflow as tf
 import cv2
 import numpy as np
-CAMERA_URL = "http://localhost:8080/zm/cgi-bin/zms?monitor=1"
+CAMERA_URL = "http://zm:80/zm/cgi-bin/zms?monitor=1"
 from argparse import ArgumentParser
 
 
