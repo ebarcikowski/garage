@@ -1,5 +1,4 @@
 import tensorflow as tf
-import matplotlib.pyplot as plt
 import cv2
 import numpy as np
 CAMERA_URL = "http://localhost:8080/zm/cgi-bin/zms?monitor=1"
