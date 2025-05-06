@@ -11,7 +11,7 @@ setup(
             'infer:garage.infer:main',
             'app:garage.app:main',
         ]
-    }
+    },
     scripts=[
         "bin/nn_infer.py",
         "bin/nn_train.py"
