@@ -7,13 +7,9 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'train:garage.train:main',
-            'infer:garage.infer:main',
-            'app:garage.app:main',
+            'train=garage.train:main',
+            'infer=garage.infer:main',
+            'app=garage.app:main',
         ]
-    },
-    scripts=[
-        "bin/nn_infer.py",
-        "bin/nn_train.py"
-    ]
+    }
 )
