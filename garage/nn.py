@@ -90,16 +90,16 @@ class Capture:
     def get_image_model(self):
         """
         Create TF function for model inference
+
+        NOTE. My camera is no longer up so this hasn't been tested since the
+        migration to TF2.
         """
         img = self.get_image()
         img = cv2.resize(img, (256, 256), )
         img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-        return img
-        # img = np.expand_dims(img, axis=0)
-        # ds = tf.data.Dataset.from_tensor_slices(img)
-        # ds = ds.map(lambda x: {"x": x})
-        # return ds.batch(1)
-        return img
+        img_array = keras.utils.img_to_array(img)
+        img_array = tf.expand_dims(img_array, 0)
+        return img_array
 
 
 if __name__ == '__main__':
