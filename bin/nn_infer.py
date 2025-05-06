@@ -22,7 +22,7 @@ def load_image(path):
 
     return img_array
 
-if __name__ == '__main__':
+def main():
     parser = ArgumentParser('perform garage door open training')
     parser.add_argument(
         '--model',
@@ -60,3 +60,7 @@ if __name__ == '__main__':
         predicts = model.predict(img_array, verbose=0)
         idx = np.argmax(predicts)
         print(f"Door status: {CLASSES[idx]}")
+
+
+if __name__ == '__main__':
+    main()

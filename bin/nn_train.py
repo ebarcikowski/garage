@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 from garage import nn
 from argparse import ArgumentParser
-import tensorflow as tf
 
 
-if __name__ == '__main__':
+def main():
     parser = ArgumentParser('perform garage door open training')
     parser.add_argument('--data_dir', help='Data location', default='../data')
     parser.add_argument('--epochs', type=int, default=10)
@@ -19,4 +18,5 @@ if __name__ == '__main__':
     if args.save_model:
         model.save(args.save_model)
 
-
+if __name__ == '__main__':
+    main()
