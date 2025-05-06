@@ -1,10 +1,20 @@
 #!/usr/env python3
+"""
+Web endpoint get garage door status. This was the original purpose
+of this project.
+
+This hasn't been tested in sometime since my cameras are all offline.
+"""
 from garage import nn
 import flask
+from tensorflow import keras
+import numpy as np
 
+
+MODEL_PATH = './saved.keras'
+model = keras.models.load_model(MODEL_PATH)
 app = flask.Flask(__name__)
 
-model = nn.get_linear_model(warm_start=True)
 cap = nn.Capture()
 
 
@@ -12,11 +22,11 @@ cap = nn.Capture()
 def predict():
     data = {"closed": False}
 
-    gen = model.predict(cap.make_pred_fn)
-    result = list(gen)[0]
+    predicts = model.predict(cap.get_image_model())
+    idx = np.argmax(predicts)
+    if idx == 0:
+        data["closed"] = True
 
-    if result['class_ids'] == 0:
-        data['closed'] = True
     return flask.jsonify(data)
 
 

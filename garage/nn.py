@@ -1,4 +1,6 @@
 import tensorflow as tf
+from tensorflow import keras
+from keras import layers
 import cv2
 import numpy as np
 CAMERA_URL = "http://zm:80/zm/cgi-bin/zms?monitor=1"
@@ -23,46 +25,60 @@ def train_input_fn(path='data'):
             batch_size=1
         )
         ds = ds.map(lambda x, y: ({"x": x}, y))
+
         return ds.repeat()
     return fn
 
 
-def get_linear_model(model_dir=None, warm_start=False):
+def get_training_data(path='data'):
+    ds = tf.keras.preprocessing.image_dataset_from_directory(
+            path,
+            label_mode='binary',
+            batch_size=1,
+            image_size=(256, 256),
+            color_mode="grayscale",
+        )
+    return ds
+
+def get_model(model_dir=None, warm_start=False):
     """
     Return basic linear classifier
     """
-    fc = tf.feature_column.numeric_column("x", shape=(256, 256, 3))
-
-    if not model_dir:
-        model_dir = 'tensorflow_gd'
-
-    if warm_start:
-        return tf.estimator.LinearClassifier(
-            feature_columns=[fc],
-            n_classes=2,
-            model_dir=model_dir,
-            warm_start_from=model_dir
-        )
-    return tf.estimator.LinearClassifier(
-        feature_columns=[fc],
-        n_classes=2,
-        model_dir=model_dir,
+    model = keras.models.Sequential([
+        layers.Rescaling(1./255, input_shape=(256, 256, 1)),
+        layers.Conv2D(16, 3, padding='same', activation='relu'),
+        layers.MaxPooling2D(),
+        layers.Conv2D(32, 3, padding='same', activation='relu'),
+        layers.MaxPooling2D(),
+        layers.Conv2D(64, 3, padding='same', activation='relu'),
+        layers.MaxPooling2D(),
+        layers.Flatten(),
+        layers.Dense(128, activation='relu'),
+        layers.Dense(2)
+    ])
+    model.compile(
+        optimizer='adam',
+        loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        metrics=['accuracy']
     )
-
-
-def export_estimator(estimator, saved_model_path):
-    serving_input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn()
-    #    tf.feature_column.numeric_column("x", shape=(256, 256, 3))
-    # )
-    estimator.export_saved_model(saved_model_path, serving_input_fn)
+    return model
 
 
 class Capture:
     """
     Make link to the web camera API and return data for inference.
     """
-    def __init__(self, url=CAMERA_URL):
-        self.url = CAMERA_URL
+    DEFAULT_PATH = "/zm/cgi-bin/zms?monitor=1"
+    DEFAULT_DOMAIN = "http://localhost:8080"
+    def __init__(self,
+        url=None,
+        domain=DEFAULT_DOMAIN,
+        path=DEFAULT_PATH
+    ):
+        if url:
+            self.url = url
+        else:
+            self.url = domain + path
         self.cap = cv2.VideoCapture()
         assert self.cap.open(self.url) is True
 
@@ -71,16 +87,19 @@ class Capture:
         rc, img_color = self.cap.read()
         return img_color
 
-    def make_pred_fn(self):
+    def get_image_model(self):
         """
         Create TF function for model inference
         """
         img = self.get_image()
-        img = cv2.resize(img, (256, 256))
-        img = np.expand_dims(img, axis=0)
-        ds = tf.data.Dataset.from_tensor_slices(img)
-        ds = ds.map(lambda x: {"x": x})
-        return ds.batch(1)
+        img = cv2.resize(img, (256, 256), )
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        return img
+        # img = np.expand_dims(img, axis=0)
+        # ds = tf.data.Dataset.from_tensor_slices(img)
+        # ds = ds.map(lambda x: {"x": x})
+        # return ds.batch(1)
+        return img
 
 
 if __name__ == '__main__':
