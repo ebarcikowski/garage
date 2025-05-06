@@ -1,4 +1,5 @@
-#!/usr/env python3
+"""Test model with CLI script."""
+
 from garage import nn
 from argparse import ArgumentParser
 from tensorflow import keras

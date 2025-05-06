@@ -1,4 +1,3 @@
-#!/usr/env python3
 """
 Web endpoint get garage door status. This was the original purpose
 of this project.
